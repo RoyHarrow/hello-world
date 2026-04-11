@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sponsorship Donations</title>
+  <style>
+    :root {
+      --bg: #f5efe3;
+      --panel: #fffaf0;
+      --ink: #1b1b1b;
+      --muted: #59534d;
+      --accent: #d1495b;
+      --accent-2: #00798c;
+      --line: #d8ccba;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 20%, #fff2d9 0, transparent 40%),
+        radial-gradient(circle at 85% 10%, #e0f4f5 0, transparent 38%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      width: min(980px, 92vw);
+      margin: 2rem auto;
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1.25rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,.05);
+    }
+
+    h1 {
+      margin: 0 0 .5rem;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      letter-spacing: .02em;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .total {
+      margin-top: 1rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-2);
+    }
+
+    form {
+      display: grid;
+      gap: .9rem;
+    }
+
+    label {
+      display: grid;
+      gap: .35rem;
+      font-weight: 600;
+    }
+
+    input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: .65rem .75rem;
+      border-radius: 10px;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    button {
+      justify-self: start;
+      border: 0;
+      background: linear-gradient(135deg, var(--accent), #eb6f80);
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .error {
+      color: #a91e2c;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: .5rem;
+    }
+
+    th, td {
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      padding: .6rem .2rem;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    .empty {
+      color: var(--muted);
+      margin: .25rem 0 0;
+    }
+
+    @media (max-width: 640px) {
+      th:nth-child(3), td:nth-child(3) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="panel">
+      <h1>Sponsorship Donations</h1>
+      <p class="subtitle">Supporters can leave their name, donation amount, and a message.</p>
+      <p class="total">Running Total: {{ total_cents | money }}</p>
+    </section>
+
+    <section class="panel">
+      <h2>Add Donation</h2>
+      {% if error %}
+        <p class="error">{{ error }}</p>
+      {% endif %}
+      <form method="post" action="/">
+        <label>
+          Name
+          <input type="text" name="name" required maxlength="80" />
+        </label>
+        <label>
+          Amount
+          <input type="number" name="amount" required min="0.01" step="0.01" placeholder="25.00" />
+        </label>
+        <label>
+          Message
+          <textarea name="message" required maxlength="300" placeholder="Thank you for the great work!"></textarea>
+        </label>
+        <button type="submit">Record Donation</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Donor Wall</h2>
+      {% if donations %}
+        <table>
+          <thead>
+            <tr>
+              <th>Donor</th>
+              <th>Amount</th>
+              <th>Message</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in donations %}
+              <tr>
+                <td>{{ row["donor_name"] }}</td>
+                <td>{{ row["amount_cents"] | money }}</td>
+                <td>{{ row["message"] }}</td>
+                <td>{{ row["created_at"] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="empty">No donations yet. Be the first sponsor.</p>
+      {% endif %}
+    </section>
+  </main>
+</body>
+</html>
